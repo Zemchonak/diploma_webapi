@@ -1,2 +1,2 @@
-# diploma_webapi
-GSTU RESTful WebAPI
+# diploma_api
+GSTU diploma API project
