@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FitnessCenterManagement.DataAccess.Contexts;
+using FitnessCenterManagement.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessCenterManagement.DataAccess.SignalR
