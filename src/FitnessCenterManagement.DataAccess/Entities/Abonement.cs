@@ -15,7 +15,7 @@ namespace FitnessCenterManagement.DataAccess.Entities
 
         public int Attendances { get; set; }
 
-        public Enums.Enums Status { get; set; }
+        public AbonementStatus Status { get; set; }
 
         public string ImageName { get; set; }
     }
