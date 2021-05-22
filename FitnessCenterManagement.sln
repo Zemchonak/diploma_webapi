@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31005.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitnessCenterManagement.DataAccess", "src\FitnessCenterManagement.DataAccess\FitnessCenterManagement.DataAccess.csproj", "{0C8B2777-7C71-45B1-8B7C-5B3EC785C48A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitnessCenterManagement.BusinessLogic", "src\FitnessCenterManagement.BusinessLogic\FitnessCenterManagement.BusinessLogic.csproj", "{AA4C34B7-4EF1-4334-AA8A-DD9BC28E5DA8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitnessCenterManagement.Api", "src\FitnessCenterManagement.Api\FitnessCenterManagement.Api.csproj", "{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C8B2777-7C71-45B1-8B7C-5B3EC785C48A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C8B2777-7C71-45B1-8B7C-5B3EC785C48A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C8B2777-7C71-45B1-8B7C-5B3EC785C48A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C8B2777-7C71-45B1-8B7C-5B3EC785C48A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA4C34B7-4EF1-4334-AA8A-DD9BC28E5DA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA4C34B7-4EF1-4334-AA8A-DD9BC28E5DA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA4C34B7-4EF1-4334-AA8A-DD9BC28E5DA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA4C34B7-4EF1-4334-AA8A-DD9BC28E5DA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		RESX_ExcelExportMode = MultipleSheets
+		SolutionGuid = {305891B4-A821-4FEB-8CFE-9DB5635A4868}
+	EndGlobalSection
+EndGlobal
