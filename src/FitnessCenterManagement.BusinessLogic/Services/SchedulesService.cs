@@ -137,7 +137,7 @@ namespace FitnessCenterManagement.BusinessLogic.Services
         // DATEEVENT
         public async Task<int> CreateDateEventAsync(DateEventDto item)
         {
-            ValidateDateEvent(item);
+            await ValidateDateEvent(item);
 
             return await _dateEventEntityService.CreateAsync(_mapper.Map<DateEvent>(item));
         }
@@ -154,7 +154,7 @@ namespace FitnessCenterManagement.BusinessLogic.Services
 
         public async Task UpdateDateEventAsync(DateEventDto item)
         {
-            ValidateDateEvent(item);
+            await ValidateDateEvent(item);
 
             await _dateEventEntityService.UpdateAsync(_mapper.Map<DateEvent>(item));
         }

@@ -1,5 +1,5 @@
-﻿using FitnessCenterManagement.DataAccess.Interfaces;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using FitnessCenterManagement.DataAccess.Interfaces;
 
 namespace FitnessCenterManagement.DataAccess.Entities
 {
