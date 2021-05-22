@@ -1,4 +1,6 @@
-﻿namespace FitnessCenterManagement.BusinessLogic.Dtos
+﻿using System;
+
+namespace FitnessCenterManagement.BusinessLogic.Dtos
 {
     public class WeeklyEventDto
     {
