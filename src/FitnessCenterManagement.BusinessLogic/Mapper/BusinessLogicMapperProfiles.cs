@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Extensions.EnumMapping;
 using FitnessCenterManagement.BusinessLogic.Dtos;
 using FitnessCenterManagement.DataAccess.Entities;
 
@@ -30,6 +31,9 @@ namespace FitnessCenterManagement.BusinessLogic.Mapper
             CreateMap<Trainer, TrainerDto>().ReverseMap();
             CreateMap<Venue, VenueDto>().ReverseMap();
             CreateMap<WeeklyEvent, WeeklyEventDto>().ReverseMap();
+            CreateMap<Enums.AbonementStatus, DataAccess.Enums.AbonementStatus>().ConvertUsingEnumMapping().ReverseMap();
+            CreateMap<Enums.AbonementCardStatus, DataAccess.Enums.AbonementCardStatus>().ConvertUsingEnumMapping().ReverseMap();
+            CreateMap<Enums.DateEventStatus, DataAccess.Enums.DateEventStatus>().ConvertUsingEnumMapping().ReverseMap();
         }
     }
 }
