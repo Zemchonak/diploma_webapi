@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FitnessCenterManagement.Api.Models;
+using FitnessCenterManagement.BusinessLogic.Dtos;
 
 namespace FitnessCenterManagement.Api.Mapper
 {
@@ -6,12 +8,9 @@ namespace FitnessCenterManagement.Api.Mapper
     {
         public PresentationMapperProfile()
         {
-            // CreateMap<SpecializationModel, SpecializationDto>().ReverseMap()
-            // CreateMap<ServiceModel, ServiceDto>().ReverseMap()
-            // CreateMap<TrainerModel, TrainerDto>().ReverseMap()
-            // CreateMap<TrainerEditModel, TrainerDto>().ReverseMap()
-            // CreateMap<VenueModel, VenueDto>().ReverseMap()
-            // CreateMap<EventModel, FitnessEventDto>().ReverseMap()
+            CreateMap<SpecializationModel, SpecializationDto>().ReverseMap();
+            CreateMap<ServiceModel, ServiceDto>().ReverseMap();
+            CreateMap<VenueModel, VenueDto>().ReverseMap();
         }
     }
 }
