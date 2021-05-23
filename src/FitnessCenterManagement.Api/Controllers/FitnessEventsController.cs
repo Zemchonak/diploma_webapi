@@ -52,7 +52,7 @@ namespace FitnessCenterManagement.Api.Controllers
         /// <summary>
         /// Gets the info about the fitness event.
         /// </summary>
-        /// <response code="200">Get is successful, the response contains data about all the fitness events.</response>
+        /// <response code="200">Get is successful, the response contains data about the fitness events.</response>
         /// <response code="404">The fitness event wasn't found.</response>
         [HttpGet("{id}")]
         [AllowAnonymous]
