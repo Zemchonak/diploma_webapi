@@ -11,6 +11,7 @@ namespace FitnessCenterManagement.Api.Mapper
             CreateMap<SpecializationModel, SpecializationDto>().ReverseMap();
             CreateMap<ServiceModel, ServiceDto>().ReverseMap();
             CreateMap<VenueModel, VenueDto>().ReverseMap();
+            CreateMap<FitnessEventModel, FitnessEventDto>().ReverseMap();
         }
     }
 }
