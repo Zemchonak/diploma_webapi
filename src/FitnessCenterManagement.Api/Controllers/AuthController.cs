@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FitnessCenterManagement.Api.Identity;
 using FitnessCenterManagement.Api.JwtServices;
 using FitnessCenterManagement.Api.Models;
+using FitnessCenterManagement.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,21 +16,21 @@ namespace FitnessCenterManagement.Api.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+        private readonly IUsersService _usersService;
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly JwtTokenService _jwtTokenService;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AuthController(
-            RoleManager<IdentityRole> roleManager,
+            IUsersService usersService,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             JwtTokenService jwtTokenService)
         {
+            _usersService = usersService;
             _signInManager = signInManager;
             _userManager = userManager;
             _jwtTokenService = jwtTokenService;
-            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -193,6 +194,8 @@ namespace FitnessCenterManagement.Api.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, Identity.IdentityConstants.UserRole);
+
+                await _usersService.CreateCustomerAsync(new BusinessLogic.Dtos.CustomerDto { CustomerCategoryId = null, UserId = user.Id });
 
                 var roles = await _userManager.GetRolesAsync(user);
                 return Ok(_jwtTokenService.GetToken(user, roles));
