@@ -67,7 +67,7 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             return _mapper.Map<CustomerCategoryDto>(await _customerCategoryEntityService.GetByIdAsync(id));
         }
 
-        public async Task<IReadOnlyCollection<CustomerCategoryDto>> GetAllCustomerCategorysAsync()
+        public async Task<IReadOnlyCollection<CustomerCategoryDto>> GetAllCustomerCategoriesAsync()
         {
             return _mapper.Map<IReadOnlyCollection<CustomerCategoryDto>>((await _customerCategoryEntityService.GetAll().ToListAsync()).AsReadOnly());
         }

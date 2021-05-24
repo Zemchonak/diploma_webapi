@@ -21,7 +21,7 @@ namespace FitnessCenterManagement.BusinessLogic.Interfaces
         /// Returns an <see cref="IReadOnlyCollection{CustomerCategoryDto}"/> of all the created <see cref="CustomerCategoryDto"/>.
         /// </summary>
         /// <returns>An <see cref="IReadOnlyCollection{CustomerCategoryDto}"/> of <see cref="CustomerCategoryDto"/>.</returns>
-        Task<IReadOnlyCollection<CustomerCategoryDto>> GetAllCustomerCategorysAsync();
+        Task<IReadOnlyCollection<CustomerCategoryDto>> GetAllCustomerCategoriesAsync();
 
         /// <summary>
         /// Returns an <see cref="CustomerCategoryDto"/> with the specified ID.
