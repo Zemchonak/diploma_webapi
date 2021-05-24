@@ -16,5 +16,7 @@
     {
         Cancelled = 0,
         Available,
+        Started,
+        Finished,
     }
 }
