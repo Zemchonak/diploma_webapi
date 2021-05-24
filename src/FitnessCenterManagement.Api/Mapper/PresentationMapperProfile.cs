@@ -13,6 +13,7 @@ namespace FitnessCenterManagement.Api.Mapper
             CreateMap<ServiceModel, ServiceDto>().ReverseMap();
             CreateMap<VenueModel, VenueDto>().ReverseMap();
             CreateMap<FitnessEventModel, FitnessEventDto>().ReverseMap();
+            CreateMap<AbonementModel, AbonementDto>().ReverseMap();
 
             CreateMap<Enums.AbonementStatus, BusinessLogic.Enums.AbonementStatus>().ConvertUsingEnumMapping().ReverseMap();
             CreateMap<Enums.AbonementCardStatus, BusinessLogic.Enums.AbonementCardStatus>().ConvertUsingEnumMapping().ReverseMap();
