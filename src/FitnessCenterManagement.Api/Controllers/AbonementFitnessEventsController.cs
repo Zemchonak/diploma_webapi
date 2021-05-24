@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -17,41 +16,41 @@ namespace FitnessCenterManagement.Api.Controllers
     [Route("api/[controller]")]
     public class AbonementFitnessEventsController : ControllerBase
     {
-        private readonly IAbonementsService _abonementsService;
+        private readonly ISchedulesService _schedulesService;
         private readonly IMapper _mapper;
 
-        public AbonementFitnessEventsController(IAbonementsService abonementsService, IMapper mapper)
+        public AbonementFitnessEventsController(ISchedulesService schedulesService, IMapper mapper)
         {
-            _abonementsService = abonementsService;
+            _schedulesService = schedulesService;
             _mapper = mapper;
         }
 
         /// <summary>
-        /// Gets all the abonements.
+        /// Gets all the abonement fitness events.
         /// </summary>
-        /// <response code="200">Get is successful, the response contains data about the abonements.</response>
+        /// <response code="200">Get is successful, the response contains data about the abonement fitness events.</response>
         [HttpGet("")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Index(string part = "")
+        public async Task<IActionResult> Index(int part = 0)
         {
             if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized();
             }
 
-            var fitnessEvents = await _abonementsService.GetAllAbonementFitnessEventsAsync();
+            var items = await _schedulesService.GetAllAbonementFitnessEventsAsync();
 
-            return string.IsNullOrEmpty(part) ?
-                Ok(fitnessEvents) :
-                Ok(fitnessEvents.Where(s => s.Name.Contains(part, System.StringComparison.OrdinalIgnoreCase)).ToList());
+            return part == 0 ?
+                Ok(items) :
+                Ok(items.Where(s => s.FitnessEventId == part).ToList());
         }
 
         /// <summary>
-        /// Gets the info about the abonement.
+        /// Gets the info about the abonement fitness event.
         /// </summary>
-        /// <response code="200">Get is successful, the response contains data about the abonement.</response>
-        /// <response code="404">The fitness event wasn't found.</response>
+        /// <response code="200">Get is successful, the response contains data about the abonement fitness event.</response>
+        /// <response code="404">The abonement fitness event wasn't found.</response>
         [HttpGet("{id}")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -62,7 +61,7 @@ namespace FitnessCenterManagement.Api.Controllers
 
             try
             {
-                model = _mapper.Map<SpecializationModel>(await _abonementsService.GetAbonementFitnessEventByIdAsync(id));
+                model = _mapper.Map<SpecializationModel>(await _schedulesService.GetAbonementFitnessEventByIdAsync(id));
             }
             catch (BusinessLogicException)
             {
@@ -73,17 +72,17 @@ namespace FitnessCenterManagement.Api.Controllers
         }
 
         /// <summary>
-        /// Updates the abonement.
+        /// Updates the abonement fitness event.
         /// </summary>
         /// <response code="200">Successful operation.</response>
-        /// <response code="400">There was an error occured while updating the abonement.</response>
-        /// <response code="401">Update of the abonement is available for authorized users.</response>
+        /// <response code="400">There was an error occured while updating the abonement fitness event.</response>
+        /// <response code="401">Update of the abonement fitness event is available for authorized users.</response>
         [HttpPut("{id}")]
         [Authorize(Roles = Identity.IdentityConstants.ManagerRole)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] AbonementFitnessEventModels model)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] AbonementFitnessEventModel model)
         {
             try
             {
@@ -92,7 +91,7 @@ namespace FitnessCenterManagement.Api.Controllers
                     throw new BusinessLogicException("", fieldName: "", null);
                 }
 
-                await _abonementsService.UpdateAbonementFitnessEventAsync(_mapper.Map<AbonementFitnessEventDto>(model));
+                await _schedulesService.UpdateAbonementFitnessEventAsync(_mapper.Map<AbonementFitnessEventDto>(model));
             }
             catch (ValidationException ex)
             {
@@ -107,17 +106,17 @@ namespace FitnessCenterManagement.Api.Controllers
         }
 
         /// <summary>
-        /// Creates an abonement.
+        /// Creates an abonement fitness event.
         /// </summary>
         /// <response code="200">Successful operation.</response>
-        /// <response code="400">There was an error occured while creating the abonement.</response>
-        /// <response code="401">Creation of the abonement is available for authorized users.</response>
+        /// <response code="400">There was an error occured while creating the abonement fitness event.</response>
+        /// <response code="401">Creation of the abonement fitness event is available for authorized users.</response>
         [HttpPost("")]
         [Authorize(Roles = Identity.IdentityConstants.ManagerRole)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Create([FromBody] AbonementFitnessEventModels model)
+        public async Task<IActionResult> Create([FromBody] AbonementFitnessEventModel model)
         {
             int result;
 
@@ -128,7 +127,7 @@ namespace FitnessCenterManagement.Api.Controllers
                     throw new BusinessLogicException("", fieldName: "", null);
                 }
 
-                result = await _abonementsService.CreateAbonementFitnessEventAsync(_mapper.Map<AbonementFitnessEventDto>(model));
+                result = await _schedulesService.CreateAbonementFitnessEventAsync(_mapper.Map<AbonementFitnessEventDto>(model));
             }
             catch (ValidationException ex)
             {
@@ -143,11 +142,11 @@ namespace FitnessCenterManagement.Api.Controllers
         }
 
         /// <summary>
-        /// Deletes the abonement.
+        /// Deletes the abonement fitness event.
         /// </summary>
         /// <response code="200">Delete is successful.</response>
-        /// <response code="400">There was an error occured while deleting the abonement.</response>
-        /// <response code="401">Deletion of the abonement is available for authorized users.</response>
+        /// <response code="400">There was an error occured while deleting the abonement fitness event.</response>
+        /// <response code="401">Deletion of the abonement fitness event is available for authorized users.</response>
         [HttpDelete("{id}")]
         [Authorize(Roles = Identity.IdentityConstants.ManagerRole)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -157,7 +156,7 @@ namespace FitnessCenterManagement.Api.Controllers
         {
             try
             {
-                await _abonementsService.DeleteAbonementFitnessEventAsync(id);
+                await _schedulesService.DeleteAbonementFitnessEventAsync(id);
             }
             catch (ValidationException ex)
             {
