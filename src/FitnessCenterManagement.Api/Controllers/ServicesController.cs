@@ -64,18 +64,15 @@ namespace FitnessCenterManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Index([FromRoute] int id)
         {
-            ServiceModel model;
-
             try
             {
-                model = _mapper.Map<ServiceModel>(await _fitnessCatalogsService.GetServiceByIdAsync(id));
+                var model = _mapper.Map<ServiceModel>(await _fitnessCatalogsService.GetServiceByIdAsync(id));
+                return Ok(model);
             }
             catch (BusinessLogicException)
             {
                 return NotFound();
             }
-
-            return Ok(model);
         }
 
         /// <summary>
