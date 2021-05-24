@@ -23,12 +23,16 @@ namespace FitnessCenterManagement.Api.Controllers
 
         private readonly ILocalizationService _localizationService;
 
+        private readonly IQrService _qrcodeGeneratorService;
+
         public ProfileController(
             UserManager<User> userManager,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+            IQrService qrcodeGeneratorService)
         {
             _localizationService = localizationService;
             _userManager = userManager;
+            _qrcodeGeneratorService = qrcodeGeneratorService;
         }
 
         /// <summary>
@@ -175,12 +179,45 @@ namespace FitnessCenterManagement.Api.Controllers
             return PhysicalFile(CheckImageAvailability(folderName, imageName), "image/jpeg");
         }
 
-         /// <summary>
-         /// Updates the profile image.
-         /// </summary>
-         /// <response code="200">The image was updated successfully.</response>
-         /// <response code="400">The specified user wasn't found.</response>
-         /// <response code="404">User wasn't found.</response>
+        /// <summary>
+        /// Generates the profile QR.
+        /// </summary>
+        /// <response code="200">Get is successful, the response contains the QR ode of the profile.</response>
+        /// <response code="401">Profile QR code is available only for authorized users.</response>
+        /// <response code="404">The specified profile wasn't found.</response>
+        [Authorize]
+        [HttpGet("{userId}/qr")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUserQrImageAsync([FromRoute] string userId)
+        {
+            if (User.IsInRole(Identity.IdentityConstants.TrainerRole) || User.IsInRole(Identity.IdentityConstants.ManagerRole) ||
+                User.IsInRole(Identity.IdentityConstants.DirectorRole) || User.FindFirst(Identity.IdentityConstants.UserIdClaimType).Value == userId)
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user is null)
+                {
+                    return NotFound();
+                }
+
+                var qrpath = $"{Environment.CurrentDirectory}{ImageProcessingContants.ContentFolder}{user.QrCodeId}.jpg";
+
+                _qrcodeGeneratorService.CreateQrCode($"{Identity.IdentityConstants.UserPrefix}{user.QrCodeId}")
+                       .Save(qrpath);
+
+                return PhysicalFile(qrpath, "image/jpg");
+            }
+
+            return NotFound();
+        }
+
+        /// <summary>
+        /// Updates the profile image.
+        /// </summary>
+        /// <response code="200">The image was updated successfully.</response>
+        /// <response code="400">The specified user wasn't found.</response>
+        /// <response code="404">User wasn't found.</response>
         [HttpPut("avatar")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

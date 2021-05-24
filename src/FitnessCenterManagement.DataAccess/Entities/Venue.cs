@@ -13,5 +13,7 @@ namespace FitnessCenterManagement.DataAccess.Entities
         public string Location { get; set; }
 
         public string ImageName { get; set; }
+
+        public string QrCodeId { get; set; }
     }
 }

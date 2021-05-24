@@ -20,12 +20,14 @@ namespace FitnessCenterManagement.Api.Controllers
 
         private readonly IFitnessCatalogsService _fitnessCatalogsService;
         private readonly IMapper _mapper;
+        private readonly IQrService _qrcodeGeneratorService;
 
         public VenuesController(
-            IFitnessCatalogsService fitnessCatalogsService, IMapper mapper)
+            IFitnessCatalogsService fitnessCatalogsService, IQrService qrcodeGeneratorService, IMapper mapper)
         {
             _fitnessCatalogsService = fitnessCatalogsService;
             _mapper = mapper;
+            _qrcodeGeneratorService = qrcodeGeneratorService;
         }
 
         /// <summary>
@@ -128,6 +130,7 @@ namespace FitnessCenterManagement.Api.Controllers
                 }
 
                 model.ImageName = ImageProcessingContants.DefaultVenueImageFileName;
+                model.QrCodeId = Guid.NewGuid().ToString();
                 result = await _fitnessCatalogsService.CreateVenueAsync(_mapper.Map<VenueDto>(model));
             }
             catch (ValidationException ex)
@@ -169,6 +172,41 @@ namespace FitnessCenterManagement.Api.Controllers
             }
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Generates the venue QR.
+        /// </summary>
+        /// <response code="200">Get is successful, the response contains the QR ode of the venue.</response>
+        /// <response code="401">Venue QR code is available only for authorized users.</response>
+        /// <response code="404">The specified venue wasn't found.</response>
+        [Authorize]
+        [HttpGet("{venueId}/qr")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetVenueQrImageAsync([FromRoute] int venueId)
+        {
+            if (User.IsInRole(Identity.IdentityConstants.ManagerRole) || User.IsInRole(Identity.IdentityConstants.DirectorRole))
+            {
+                try
+                {
+                    var venue = await _fitnessCatalogsService.GetVenueByIdAsync(venueId);
+
+                    var qrpath = $"{Environment.CurrentDirectory}{ImageProcessingContants.ContentFolder}{venue.QrCodeId}.jpg";
+
+                    _qrcodeGeneratorService.CreateQrCode($"{Identity.IdentityConstants.VenuePrefix}{venue.QrCodeId}")
+                           .Save(qrpath);
+
+                    return PhysicalFile(qrpath, "image/jpg");
+                }
+                catch (BusinessLogicException)
+                {
+                    return NotFound();
+                }
+            }
+
+            return NotFound();
         }
 
         /// <summary>

@@ -4,6 +4,9 @@
     {
         internal const string UserIdClaimType = "UserId";
 
+        internal const string UserPrefix = "USER_";
+        internal const string VenuePrefix = "VENUE_";
+
         internal const string TrainerRole = "Trainer";
         internal const string UserRole = "User";
         internal const string ManagerRole = "Manager";

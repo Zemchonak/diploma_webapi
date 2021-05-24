@@ -59,6 +59,7 @@ namespace FitnessCenterManagement.Api.Controllers
                 Balance = IdentityConstants.MinBalance,
                 AvatarName = ImageProcessingContants.DefaultAvatarImageFileName,
                 LanguageId = IdentityConstants.DefaultLanguageId,
+                QrCodeId = Guid.NewGuid().ToString(),
             };
 
             return CreateUser(user, model.Password);

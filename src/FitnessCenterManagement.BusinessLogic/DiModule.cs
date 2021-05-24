@@ -18,6 +18,7 @@ namespace FitnessCenterManagement.BusinessLogic
             services.AddScoped<IFitnessCatalogsService, FitnessCatalogsService>();
             services.AddScoped<ISchedulesService, SchedulesService>();
             services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IQrService, QrService>();
 
             services.AddScoped<IChatService, ChatService>();
         }

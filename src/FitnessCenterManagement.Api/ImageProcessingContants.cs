@@ -2,6 +2,7 @@
 {
     public static class ImageProcessingContants
     {
+        internal const string ContentFolder = "\\Content\\QRs\\";
         internal const string DefaultAvatarsImagesFolder = "\\Content\\Avatars\\";
         internal const string DefaultVenuesImagesFolder = "\\Content\\Venues\\";
         internal const string DefaultAbonementsImagesFolder = "\\Content\\Abonements\\";

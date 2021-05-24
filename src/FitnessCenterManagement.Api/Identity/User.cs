@@ -18,6 +18,8 @@ namespace FitnessCenterManagement.Api.Identity
 
         public string AvatarName { get; set; }
 
+        public string QrCodeId { get; set; }
+
         public override string NormalizedEmail => Email.ToUpperInvariant();
 
         public override string NormalizedUserName => UserName.ToUpperInvariant();
