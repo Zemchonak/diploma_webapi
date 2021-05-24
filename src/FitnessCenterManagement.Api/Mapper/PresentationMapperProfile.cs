@@ -14,10 +14,22 @@ namespace FitnessCenterManagement.Api.Mapper
             CreateMap<VenueModel, VenueDto>().ReverseMap();
             CreateMap<FitnessEventModel, FitnessEventDto>().ReverseMap();
             CreateMap<AbonementModel, AbonementDto>().ReverseMap();
+            CreateMap<AbonementFitnessEventModel, AbonementFitnessEventDto>().ReverseMap();
+            CreateMap<AbonementCardModel, AbonementCardDto>().ReverseMap();
+            CreateMap<AbonementFitnessEventModel, AbonementFitnessEventDto>().ReverseMap();
+            CreateMap<CardEventItemModel, CardEventItemDto>().ReverseMap();
+            CreateMap<CustomerCategoryModel, CustomerCategoryDto>().ReverseMap();
+            CreateMap<DateEventModel, DateEventDto>().ReverseMap();
+            CreateMap<ReviewModel, ReviewDto>().ReverseMap();
+            CreateMap<TrainerModel, TrainerDto>().ReverseMap();
+            CreateMap<WeeklyEventModel, WeeklyEventDto>().ReverseMap();
 
-            CreateMap<Enums.AbonementStatus, BusinessLogic.Enums.AbonementStatus>().ConvertUsingEnumMapping().ReverseMap();
-            CreateMap<Enums.AbonementCardStatus, BusinessLogic.Enums.AbonementCardStatus>().ConvertUsingEnumMapping().ReverseMap();
-            CreateMap<Enums.DateEventStatus, BusinessLogic.Enums.DateEventStatus>().ConvertUsingEnumMapping().ReverseMap();
+            CreateMap<Enums.AbonementStatus, BusinessLogic.Enums.AbonementStatus>()
+                .ConvertUsingEnumMapping().ReverseMap();
+            CreateMap<Enums.AbonementCardStatus, BusinessLogic.Enums.AbonementCardStatus>()
+                .ConvertUsingEnumMapping().ReverseMap();
+            CreateMap<Enums.DateEventStatus, BusinessLogic.Enums.DateEventStatus>()
+                .ConvertUsingEnumMapping().ReverseMap();
         }
     }
 }
