@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FitnessCenterManagement.Api.Identity;
@@ -15,6 +17,8 @@ namespace FitnessCenterManagement.Api.Controllers
     [Route("api/[controller]")]
     public class AbonementsController : ControllerBase
     {
+        private readonly string[] _availableExtensions = { ".png", ".jpg", ".jpeg", ".bmp" };
+
         private readonly IAbonementsService _abonementsService;
         private readonly IMapper _mapper;
 
@@ -167,6 +171,94 @@ namespace FitnessCenterManagement.Api.Controllers
             }
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Gets the abonement image.
+        /// </summary>
+        /// <response code="200">Get is successful, the response contains the image of the abonement.</response>
+        /// <response code="404">The specified venue wasn't found.</response>
+        [AllowAnonymous]
+        [HttpGet("{id}/image")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAbonementImageAsync([FromRoute] int id)
+        {
+            try
+            {
+                var abonement = await _abonementsService.GetAbonementByIdAsync(id);
+                var imageName = abonement.ImageName;
+                var folderName = Environment.CurrentDirectory + ImageProcessingContants.DefaultAbonementsImagesFolder;
+                return PhysicalFile(CheckImageAvailability(folderName, imageName), "image/jpeg");
+            }
+            catch (BusinessLogicException)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Updates the abonement image.
+        /// </summary>
+        /// <response code="200">The image was updated successfully.</response>
+        /// <response code="400">Corrupted file.</response>
+        /// <response code="404">Abonement wasn't found.</response>
+        [HttpPut("{id}/image")]
+        [Authorize(Roles = Identity.IdentityConstants.ManagerRole)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UploadAbonementImageAsync([FromRoute] int id, [FromForm(Name = "file")] IFormFile file)
+        {
+            if (file is null)
+            {
+                return BadRequest(file);
+            }
+
+            var abonement = await _abonementsService.GetAbonementByIdAsync(id);
+            if (abonement is null)
+            {
+                return NotFound(file);
+            }
+
+            var extension = Path.GetExtension(file.FileName);
+            if (_availableExtensions.Contains(extension))
+            {
+                var guid = Guid.NewGuid();
+                await SaveOrReplaceFile(abonement.ImageName, file, guid.ToString() + extension);
+                abonement.ImageName = guid.ToString() + extension;
+                await _abonementsService.UpdateAbonementAsync(abonement);
+                return Ok();
+            }
+
+            return BadRequest(file);
+        }
+
+        private static string CheckImageAvailability(string folder, string filename)
+        {
+            var newImagePath = folder + filename;
+
+            return System.IO.File.Exists(newImagePath)
+                ? newImagePath
+                : folder + ImageProcessingContants.DefaultAbonementImageNotAvailableFileName;
+        }
+
+        private static async Task SaveOrReplaceFile(string oldAbonementImagePath, IFormFile file, string newFileName)
+        {
+            var folder = Environment.CurrentDirectory + ImageProcessingContants.DefaultVenuesImagesFolder;
+            using (var stream = new FileStream(folder + newFileName, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            if (oldAbonementImagePath != ImageProcessingContants.DefaultAbonementImageFileName
+                && oldAbonementImagePath != ImageProcessingContants.DefaultAbonementImageNotAvailableFileName
+                && System.IO.File.Exists(Environment.CurrentDirectory
+                    + ImageProcessingContants.DefaultAbonementsImagesFolder
+                    + oldAbonementImagePath))
+            {
+                System.IO.File.Delete(folder + oldAbonementImagePath);
+            }
         }
     }
 }
