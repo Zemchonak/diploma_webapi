@@ -34,11 +34,6 @@ namespace FitnessCenterManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Index(string part = "")
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized();
-            }
-
             var items = await _usersService.GetAllCustomerCategoriesAsync();
 
             return string.IsNullOrEmpty(part) ?
@@ -59,7 +54,7 @@ namespace FitnessCenterManagement.Api.Controllers
         {
             try
             {
-                var model = _mapper.Map<SpecializationModel>(await _usersService.GetCustomerCategoryByIdAsync(id));
+                var model = _mapper.Map<CustomerCategoryModel>(await _usersService.GetCustomerCategoryByIdAsync(id));
                 return Ok(model);
             }
             catch (BusinessLogicException)

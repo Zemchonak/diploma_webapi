@@ -28,11 +28,8 @@ namespace FitnessCenterManagement.Api.Controllers
         /// Gets all the specializations.
         /// </summary>
         /// <response code="200">Get is successful, the response contains data about the specializations.</response>
-        /// <response code="401">The info about the specializations is available only for authorized users.</response>
         [HttpGet("")]
-        [Authorize(Roles = IdentityConstants.ManagerRole
-            + "," + IdentityConstants.MarketerRole
-            + "," + IdentityConstants.DirectorRole)]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Index(string part = "")

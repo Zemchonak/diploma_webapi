@@ -244,7 +244,7 @@ namespace FitnessCenterManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UploadUserAvatarImageAsync([FromRoute] int id, [FromForm(Name = "file")] IFormFile file)
+        public async Task<IActionResult> UploadVenueImageAsync([FromRoute] int id, [FromForm(Name = "file")] IFormFile file)
         {
             if (file is null)
             {

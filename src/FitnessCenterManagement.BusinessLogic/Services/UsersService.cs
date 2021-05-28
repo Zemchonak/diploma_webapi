@@ -151,7 +151,7 @@ namespace FitnessCenterManagement.BusinessLogic.Services
                 throw new ValidationException(StringRes.NullEntityMsg, new ArgumentNullException(nameof(item)));
             }
 
-            if (_customerCategoryEntityService.GetAll().Any(i => i.Name == item.Name))
+            if (_customerCategoryEntityService.GetAll().Any(i => i.Name == item.Name && i.Id != item.Id))
             {
                 throw new ValidationException(StringRes.NameShouldBeUniqueMsg, fieldName: nameof(item.Name));
             }
