@@ -79,6 +79,15 @@ namespace FitnessCenterManagement.Api.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Customer.
+        /// </summary>
+        public static string AnonymousUserName {
+            get {
+                return ResourceManager.GetString("AnonymousUserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Balance.
         /// </summary>
         public static string BalanceLabel {

@@ -217,8 +217,10 @@ namespace FitnessCenterManagement.Api.Controllers
         /// </summary>
         /// <response code="200">The image was updated successfully.</response>
         /// <response code="400">The specified user wasn't found.</response>
+        /// <response code="401">Profile avatar changes are available only for authorized users.</response>
         /// <response code="404">User wasn't found.</response>
         [HttpPut("avatar")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -229,7 +231,9 @@ namespace FitnessCenterManagement.Api.Controllers
                 return BadRequest(file);
             }
 
-            var user = await _userManager.FindByIdAsync(HttpContext.User.FindFirst(Identity.IdentityConstants.UserIdClaimType).Value);
+            var user = await _userManager.FindByIdAsync(HttpContext.User
+                .FindFirst(Identity.IdentityConstants.UserIdClaimType).Value);
+
             if (user is null)
             {
                 return NotFound(file);
@@ -246,6 +250,25 @@ namespace FitnessCenterManagement.Api.Controllers
             }
 
             return BadRequest(file);
+        }
+
+        /// <summary>
+        /// Gets the default profile image.
+        /// </summary>
+        /// <response code="200">The image was updated successfully.</response>
+        /// <response code="400">The specified user wasn't found.</response>
+        /// <response code="404">User wasn't found.</response>
+        [HttpGet("image")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult FetchDefaultAvatarImageAsync()
+        {
+            var folderName = Environment.CurrentDirectory +
+                ImageProcessingContants.DefaultAvatarsImagesFolder +
+                ImageProcessingContants.DefaultAvatarImageFileName;
+
+            return PhysicalFile(folderName, "image/jpeg");
         }
 
         private static string CheckImageAvailability(string folder, string filename)

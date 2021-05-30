@@ -162,4 +162,7 @@
   <data name="InfoLabel" xml:space="preserve">
     <value>Информация</value>
   </data>
+  <data name="AnonymousUserName" xml:space="preserve">
+    <value>Клиент</value>
+  </data>
 </root>

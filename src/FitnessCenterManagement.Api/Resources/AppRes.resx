@@ -142,4 +142,7 @@
   <data name="InfoLabel" xml:space="preserve">
     <value>Info</value>
   </data>
+  <data name="AnonymousUserName" xml:space="preserve">
+    <value>Customer</value>
+  </data>
 </root>

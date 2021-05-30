@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,6 +10,7 @@ using FitnessCenterManagement.BusinessLogic.Exceptions;
 using FitnessCenterManagement.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessCenterManagement.Api.Controllers
@@ -16,11 +18,17 @@ namespace FitnessCenterManagement.Api.Controllers
     [Route("api/[controller]")]
     public class ReviewsController : ControllerBase
     {
+        private const string AnonUserName = "* * * * *";
+
         private readonly IUsersService _usersService;
+
+        private readonly UserManager<User> _userManager;
+
         private readonly IMapper _mapper;
 
-        public ReviewsController(IUsersService usersService, IMapper mapper)
+        public ReviewsController(IUsersService usersService, UserManager<User> userManager, IMapper mapper)
         {
+            _userManager = userManager;
             _usersService = usersService;
             _mapper = mapper;
         }
@@ -34,14 +42,14 @@ namespace FitnessCenterManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Index(string part = "")
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized();
-            }
+            var isMarketer = User.Identity.IsAuthenticated && User.IsInRole(Identity.IdentityConstants.MarketerRole);
+            var reviews = isMarketer ?
+                await _usersService.GetAllReviewsAsync() :
+                await _usersService.GetAllNotHiddenReviewsAsync();
 
-            var items = await _usersService.GetAllReviewsAsync();
+            var items = await FetchUserDatasInReviews(isMarketer, reviews);
 
-            return string.IsNullOrEmpty(part)?
+            return string.IsNullOrEmpty(part) ?
                 Ok(items) :
                 Ok(items.Where(s => s.Text.Contains(part, StringComparison.OrdinalIgnoreCase)).ToList());
         }
@@ -60,6 +68,28 @@ namespace FitnessCenterManagement.Api.Controllers
             try
             {
                 var model = _mapper.Map<ReviewModel>(await _usersService.GetReviewByIdAsync(id));
+                return Ok(model);
+            }
+            catch (BusinessLogicException)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Gets the info about the review by its authors ID.
+        /// </summary>
+        /// <response code="200">Get is successful, the response contains data about the review.</response>
+        /// <response code="404">The review wasn't found.</response>
+        [HttpGet("byAuthor/{userId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult IndexByAuthorId([FromRoute] string userId)
+        {
+            try
+            {
+                var model = _mapper.Map<ReviewModel>(_usersService.GetReviewByAuthorIdAsync(userId));
                 return Ok(model);
             }
             catch (BusinessLogicException)
@@ -165,6 +195,37 @@ namespace FitnessCenterManagement.Api.Controllers
             }
 
             return Ok();
+        }
+
+        private async Task<string> GetShortUserName(bool isMarketer, bool isAnonymous, string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (isMarketer)
+            {
+                return $"{user.FirstName} {user.Surname}";
+            }
+
+            return isAnonymous ? AnonUserName : $"{user.FirstName} {user.Surname}";
+        }
+
+        private async Task<IReadOnlyCollection<ReviewModel>> FetchUserDatasInReviews(bool isMarketer, IReadOnlyCollection<ReviewDto> itemsCollection)
+        {
+            var response = new List<ReviewModel>();
+
+            foreach (var one in itemsCollection)
+            {
+                response.Add(new ReviewModel
+                {
+                    Id = one.Id,
+                    UserData = await GetShortUserName(isMarketer, one.IsAnonymous, one.UserId),
+                    UserId = one.UserId,
+                    IsAnonymous = one.IsAnonymous,
+                    IsHidden = one.IsHidden,
+                    Text = one.Text,
+                });
+            }
+
+            return response.AsReadOnly();
         }
     }
 }

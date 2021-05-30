@@ -127,9 +127,21 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             return _mapper.Map<ReviewDto>(await _reviewEntityService.GetByIdAsync(id));
         }
 
+        public ReviewDto GetReviewByAuthorIdAsync(string userId)
+        {
+            return _mapper.Map<ReviewDto>(_reviewEntityService.GetAll().FirstOrDefault(r => r.UserId == userId));
+        }
+
         public async Task<IReadOnlyCollection<ReviewDto>> GetAllReviewsAsync()
         {
             return _mapper.Map<IReadOnlyCollection<ReviewDto>>((await _reviewEntityService.GetAll().ToListAsync()).AsReadOnly());
+        }
+
+        public async Task<IReadOnlyCollection<ReviewDto>> GetAllNotHiddenReviewsAsync()
+        {
+            return _mapper.Map<IReadOnlyCollection<ReviewDto>>((await _reviewEntityService.GetAll()
+                .Where(r => !r.IsHidden)
+                .ToListAsync()).AsReadOnly());
         }
 
         public async Task UpdateReviewAsync(ReviewDto item)

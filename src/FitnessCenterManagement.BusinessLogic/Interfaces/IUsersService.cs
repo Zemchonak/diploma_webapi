@@ -74,7 +74,7 @@ namespace FitnessCenterManagement.BusinessLogic.Interfaces
         /// <summary>
         /// Checks if the specified <see cref="CustomerDto"/> is valid and if it's true - updates it.
         /// </summary>
-        /// <param name="item">An <see cref="CustomerDto"/> entity to update.</param>
+        /// <param name="item">A <see cref="CustomerDto"/> entity to update.</param>
         /// <exception cref="ValidationException">Validation failure exception.</exception>
         /// <exception cref="BusinessLogic.Exceptions.BusinessLogicException">Business logic exception in case of the specified item wasn't found.</exception>
         Task UpdateCustomerAsync(CustomerDto item);
@@ -104,6 +104,12 @@ namespace FitnessCenterManagement.BusinessLogic.Interfaces
         Task<IReadOnlyCollection<ReviewDto>> GetAllReviewsAsync();
 
         /// <summary>
+        /// Returns an <see cref="IReadOnlyCollection{ReviewDto}"/> of all the created NOT HIDDEN <see cref="ReviewDto"/>.
+        /// </summary>
+        /// <returns>An <see cref="IReadOnlyCollection{ReviewDto}"/> of <see cref="ReviewDto"/>.</returns>
+        Task<IReadOnlyCollection<ReviewDto>> GetAllNotHiddenReviewsAsync();
+
+        /// <summary>
         /// Returns an <see cref="ReviewDto"/> with the specified ID.
         /// </summary>
         /// <param name="id">The ID of the <see cref="ReviewDto"/> to get.</param>
@@ -112,9 +118,17 @@ namespace FitnessCenterManagement.BusinessLogic.Interfaces
         Task<ReviewDto> GetReviewByIdAsync(int id);
 
         /// <summary>
+        /// Returns an <see cref="ReviewDto"/> with the specified author's ID.
+        /// </summary>
+        /// <param name="userId">The author's ID of the <see cref="ReviewDto"/> to get.</param>
+        /// <returns>A <see cref="ReviewDto"/> object.</returns>
+        /// <exception cref="BusinessLogic.Exceptions.BusinessLogicException">Business logic exception in case of the specified item wasn't found.</exception>
+        ReviewDto GetReviewByAuthorIdAsync(string userId);
+
+        /// <summary>
         /// Checks if the specified <see cref="ReviewDto"/> is valid and if it's true - updates it.
         /// </summary>
-        /// <param name="item">An <see cref="ReviewDto"/> entity to update.</param>
+        /// <param name="item">A <see cref="ReviewDto"/> entity to update.</param>
         /// <exception cref="ValidationException">Validation failure exception.</exception>
         /// <exception cref="BusinessLogic.Exceptions.BusinessLogicException">Business logic exception in case of the specified item wasn't found.</exception>
         Task UpdateReviewAsync(ReviewDto item);
