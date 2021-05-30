@@ -1,7 +1,9 @@
 using System;
-using System.IO;
-using System.Reflection;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using FitnessCenterManagement.Api.Contexts;
 using FitnessCenterManagement.Api.JwtServices;
@@ -9,21 +11,22 @@ using FitnessCenterManagement.BusinessLogic;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 
 namespace FitnessCenterManagement.Api
 {
-    public class Startup
+    public partial class Startup
     {
-        private const string JwtIssuerConfigKey = "JwtIssuer";
-        private const string JwtAudienceConfigKey = "JwtAudience";
-        private const string JwtSecretKeyConfigKey = "JwtSecretKey";
+        // private const string JwtIssuerConfigKey = "JwtIssuer"
+        // private const string JwtAudienceConfigKey = "JwtAudience"
+        // private const string JwtSecretKeyConfigKey = "JwtSecretKey"
         private const string ConnectionStringName = "MainDbConnectionString";
 
         public Startup(IConfiguration configuration)
@@ -32,6 +35,45 @@ namespace FitnessCenterManagement.Api
         }
 
         public IConfiguration Configuration { get; }
+
+        public static void ConfigureLocalization(IServiceCollection services)
+        {
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new List<CultureInfo>
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("ru-RU"),
+                    new CultureInfo("be-BY"),
+                };
+
+                options.DefaultRequestCulture = new RequestCulture(culture: "ru-RU", uiCulture: "ru-RU");
+                options.SupportedCultures = supportedCultures;
+                options.SupportedUICultures = supportedCultures;
+
+                options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider(async context =>
+                {
+                    var cookiesLang = context.Request.Cookies["Language"];
+
+                    var typedHeaders = context.Request.GetTypedHeaders();
+
+                    if (typedHeaders.AcceptLanguage != null && typedHeaders.AcceptLanguage.Any())
+                    {
+                        var browserLangCode = typedHeaders.AcceptLanguage?.First()?.Value.ToString()
+                                .Split(";").FirstOrDefault()?.Split(",").FirstOrDefault();
+
+                        var browserLang = supportedCultures.FirstOrDefault(lang =>
+                        lang.Name.Contains(browserLangCode, StringComparison.InvariantCultureIgnoreCase)).Name;
+
+                        return await Task.FromResult(new ProviderCultureResult(cookiesLang is null ? browserLang : cookiesLang));
+                    }
+
+                    return await Task.FromResult(new ProviderCultureResult(cookiesLang is null ? "ru-RU" : cookiesLang));
+                }));
+            });
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -60,11 +102,11 @@ namespace FitnessCenterManagement.Api
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = tokenSettings[JwtIssuerConfigKey],
+                        ValidIssuer = JwtValues.Issuer,
                         ValidateAudience = true,
-                        ValidAudience = tokenSettings[JwtAudienceConfigKey],
+                        ValidAudience = JwtValues.Audience,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSettings[JwtSecretKeyConfigKey])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtValues.Key)),
                         ValidateLifetime = false,
                     };
                 });
@@ -82,40 +124,11 @@ namespace FitnessCenterManagement.Api
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
 
+            ConfigureLocalization(services);
+
             services.AddControllers();
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "FitnessCenterManagement.API",
-                    Version = "v1",
-                    Description = "Provides endpoints to interact with services. CI CD processes were configured successfully.",
-                });
 
-                var jwtSecurityScheme = new OpenApiSecurityScheme
-                {
-                    Description = "Allows to attach a JWT token to the request to access the endpoints requiring authorization.",
-                    In = ParameterLocation.Header,
-                    Name = "JWT Authentication",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    Reference = new OpenApiReference
-                    {
-                        Id = JwtBearerDefaults.AuthenticationScheme,
-                        Type = ReferenceType.SecurityScheme,
-                    },
-                };
-                options.AddSecurityDefinition("Bearer", jwtSecurityScheme);
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { jwtSecurityScheme, System.Array.Empty<string>() },
-                });
-
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                options.IncludeXmlComments(xmlPath);
-            });
+            ConfigureSwagger(services);
 
             // services.AddMvc(options =>
             //    options.Filters.Add(typeof(SimpleResourceFilter))
@@ -137,6 +150,8 @@ namespace FitnessCenterManagement.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseRequestLocalization();
 
             app.UseHttpsRedirection();
 
