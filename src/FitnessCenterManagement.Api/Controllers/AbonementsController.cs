@@ -127,6 +127,9 @@ namespace FitnessCenterManagement.Api.Controllers
                     throw new BusinessLogicException("", fieldName: "", null);
                 }
 
+                model.ImageName = ImageProcessingContants.DefaultAbonementImageFileName;
+                model.Status = Enums.AbonementStatus.Disabled;
+
                 result = await _abonementsService.CreateAbonementAsync(_mapper.Map<AbonementDto>(model));
             }
             catch (ValidationException ex)
