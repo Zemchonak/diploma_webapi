@@ -37,16 +37,11 @@ namespace FitnessCenterManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Index(string part = "")
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized();
-            }
-
-            var fitnessEvents = await _abonementsService.GetAllAbonementsAsync();
+            var items = await _abonementsService.GetAllAbonementsAsync();
 
             return string.IsNullOrEmpty(part) ?
-                Ok(fitnessEvents) :
-                Ok(fitnessEvents.Where(s => s.Name.Contains(part, System.StringComparison.OrdinalIgnoreCase)).ToList());
+                Ok(items) :
+                Ok(items.Where(s => s.Name.Contains(part, System.StringComparison.OrdinalIgnoreCase)).ToList());
         }
 
         /// <summary>
@@ -62,7 +57,7 @@ namespace FitnessCenterManagement.Api.Controllers
         {
             try
             {
-                var model = _mapper.Map<SpecializationModel>(await _abonementsService.GetAbonementByIdAsync(id));
+                var model = _mapper.Map<AbonementModel>(await _abonementsService.GetAbonementByIdAsync(id));
                 return Ok(model);
             }
             catch (BusinessLogicException)
@@ -159,7 +154,11 @@ namespace FitnessCenterManagement.Api.Controllers
         {
             try
             {
+                var abonement = await _abonementsService.GetAbonementByIdAsync(id);
+
                 await _abonementsService.DeleteAbonementAsync(id);
+
+                System.IO.File.Delete(Environment.CurrentDirectory + ImageProcessingContants.DefaultAbonementsImagesFolder + abonement.ImageName);
             }
             catch (ValidationException ex)
             {
@@ -245,7 +244,7 @@ namespace FitnessCenterManagement.Api.Controllers
 
         private static async Task SaveOrReplaceFile(string oldAbonementImagePath, IFormFile file, string newFileName)
         {
-            var folder = Environment.CurrentDirectory + ImageProcessingContants.DefaultVenuesImagesFolder;
+            var folder = Environment.CurrentDirectory + ImageProcessingContants.DefaultAbonementsImagesFolder;
             using (var stream = new FileStream(folder + newFileName, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
