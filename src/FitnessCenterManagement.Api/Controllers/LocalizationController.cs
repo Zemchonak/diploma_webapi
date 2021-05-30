@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using FitnessCenterManagement.Api.Identity;
 using FitnessCenterManagement.Api.Models;
@@ -42,6 +43,9 @@ namespace FitnessCenterManagement.Api.Controllers
 
             var savedCulture = cultures.First(cul => cul.Id == user.LanguageId);
 
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(savedCulture.Code);
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(savedCulture.Code);
+
             return Ok(savedCulture);
         }
 
@@ -58,6 +62,11 @@ namespace FitnessCenterManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> SetLanguage([FromBody] ChangeLanguageModel model)
         {
+            if (model is null || string.IsNullOrEmpty(model.LanguageCode))
+            {
+                return BadRequest();
+            }
+
             var cultures = await _localizationService.GetAllAsync();
 
             if (!cultures.Any(c => c.Code == model.LanguageCode))
@@ -68,6 +77,9 @@ namespace FitnessCenterManagement.Api.Controllers
             var userName = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var user = await _userManager.FindByNameAsync(userName);
             user.LanguageId = cultures.FirstOrDefault(c => c.Code == model.LanguageCode).Id;
+
+            Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(model.LanguageCode);
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(model.LanguageCode);
 
             var result = await _userManager.UpdateAsync(user);
 
