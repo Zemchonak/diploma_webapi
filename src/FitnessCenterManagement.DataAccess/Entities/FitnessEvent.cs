@@ -3,7 +3,7 @@ using FitnessCenterManagement.DataAccess.Interfaces;
 
 namespace FitnessCenterManagement.DataAccess.Entities
 {
-    [Table("Event")]
+    [Table("FitnessEvent")]
     public class FitnessEvent : IBasicEntity
     {
         public int Id { get; set; }

@@ -37,11 +37,6 @@ namespace FitnessCenterManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Index(int part = 0)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized();
-            }
-
             var fitnessEvents = await _fitnessCatalogsService.GetAllFitnessEventsAsync();
 
             return (part == 0) ?
@@ -62,7 +57,7 @@ namespace FitnessCenterManagement.Api.Controllers
         {
             try
             {
-                var model = _mapper.Map<SpecializationModel>(await _fitnessCatalogsService.GetSpecializationByIdAsync(id));
+                var model = _mapper.Map<FitnessEventModel>(await _fitnessCatalogsService.GetFitnessEventByIdAsync(id));
                 return Ok(model);
             }
             catch (BusinessLogicException)

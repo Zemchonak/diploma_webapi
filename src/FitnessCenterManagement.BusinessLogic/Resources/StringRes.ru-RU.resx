@@ -166,7 +166,7 @@
     <value>Число посещений должно быть не больше чем то, что предусмотрено абнонементом!</value>
   </data>
   <data name="MaximumMinutesMsg" xml:space="preserve">
-    <value>Продолжительность занятия должна быть меньше ілі 180 мінут!</value>
+    <value>Продолжительность занятия должна быть меньше или 180 минут!</value>
   </data>
   <data name="NotUniqueAddressNameMsg" xml:space="preserve">
     <value>Место проведения занятий должно иметь уникальное имя в указанном адресе!</value>

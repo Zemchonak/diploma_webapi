@@ -40,10 +40,10 @@ namespace FitnessCenterManagement.Api.JwtServices
             };
             userClaims.AddRange(roleClaims);
             var jwt = new JwtSecurityToken(
-                issuer: _settings.JwtIssuer,
-                audience: _settings.JwtAudience,
+                issuer: JwtValues.Issuer,
+                audience: JwtValues.Audience,
                 signingCredentials: new SigningCredentials(
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.JwtSecretKey)),
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtValues.Key)),
                     SecurityAlgorithms.HmacSha256),
                 claims: userClaims,
                 expires: DateTime.Now.AddDays(DaysExpirationTerm));
@@ -63,11 +63,11 @@ namespace FitnessCenterManagement.Api.JwtServices
                 new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = _settings.JwtIssuer,
+                    ValidIssuer = JwtValues.Issuer,
                     ValidateAudience = true,
-                    ValidAudience = _settings.JwtAudience,
+                    ValidAudience = JwtValues.Audience,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.JwtSecretKey)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtValues.Key)),
                     ValidateLifetime = true,
                     LifetimeValidator =
                         (before, exprise, localToken, parameters) =>
