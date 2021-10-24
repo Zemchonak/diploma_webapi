@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,13 +20,42 @@ namespace FitnessCenterManagement.Api.Controllers
     {
         private readonly string[] _availableExtensions = { ".png", ".jpg", ".jpeg", ".bmp" };
 
+        private readonly ISchedulesService _schedulesService;
+        private readonly IFitnessCatalogsService _fitnessCatalogsService;
         private readonly IAbonementsService _abonementsService;
         private readonly IMapper _mapper;
 
-        public AbonementsController(IAbonementsService abonementsService, IMapper mapper)
+        public AbonementsController(IAbonementsService abonementsService,
+            IFitnessCatalogsService fitnessCatalogsService,
+            ISchedulesService schedulesService, IMapper mapper)
         {
+            _schedulesService = schedulesService;
+            _fitnessCatalogsService = fitnessCatalogsService;
             _abonementsService = abonementsService;
             _mapper = mapper;
+        }
+
+        /// <summary>
+        /// Gets the price of the abonement.
+        /// </summary>
+        /// <response code="200">Get is successful, the response contains data about the price.</response>
+        [HttpGet("{id}/price")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> PriceById([FromRoute] int id)
+        {
+            var abonement = await _abonementsService.GetAbonementByIdAsync(id);
+            var abonementfitnessEvents = await _schedulesService.GetAbonementFitnessEventsByAbonementIdAsync(id);
+
+            decimal price = 0.0m;
+
+            foreach (var one in abonementfitnessEvents)
+            {
+                var serviceId = (await _fitnessCatalogsService.GetFitnessEventByIdAsync(one.FitnessEventId)).ServiceId;
+                price += (await _fitnessCatalogsService.GetServiceByIdAsync(serviceId)).Price;
+            }
+
+            return Ok(price * abonement.Coefficient);
         }
 
         /// <summary>

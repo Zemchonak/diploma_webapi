@@ -36,6 +36,7 @@ namespace FitnessCenterManagement.Api.JwtServices
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim("userId", user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.UserName),
                 new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
             };
             userClaims.AddRange(roleClaims);

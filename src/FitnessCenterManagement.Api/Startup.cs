@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using FitnessCenterManagement.Api.Contexts;
-using FitnessCenterManagement.Api.JwtServices;
+using FitnessCenterManagement.Api.SignalR;
 using FitnessCenterManagement.BusinessLogic;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +16,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FitnessCenterManagement.Api
 {
@@ -33,8 +30,6 @@ namespace FitnessCenterManagement.Api
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         public static void ConfigureLocalization(IServiceCollection services)
         {
@@ -88,31 +83,7 @@ namespace FitnessCenterManagement.Api
 
             services.ConfigureBllServices(connString);
 
-            var tokenSettings = Configuration.GetSection("JwtTokenSettings");
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-                .AddJwtBearer(options =>
-                {
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = JwtValues.Issuer,
-                        ValidateAudience = true,
-                        ValidAudience = JwtValues.Audience,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtValues.Key)),
-                        ValidateLifetime = false,
-                    };
-                });
-
-            services.Configure<JwtTokenSettings>(tokenSettings);
-            services.AddScoped<JwtTokenService>();
+            ConfigureAuthentication(services);
 
             var mapperConfig = new MapperConfiguration(mc =>
             {
@@ -124,15 +95,21 @@ namespace FitnessCenterManagement.Api
             IMapper mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
 
+            // services.AddSingleton(typeof(IUserIdProvider), typeof(MessagingUserIdProvider))
             ConfigureLocalization(services);
 
             services.AddControllers();
 
             ConfigureSwagger(services);
 
-            // services.AddMvc(options =>
-            //    options.Filters.Add(typeof(SimpleResourceFilter))
-            // )
+            services.AddCors(options =>
+                options.AddDefaultPolicy(builder =>
+                    builder.SetIsOriginAllowed(_ => true)
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials()));
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -157,12 +134,16 @@ namespace FitnessCenterManagement.Api
 
             app.UseRouting();
 
+            app.UseCors();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                endpoints.MapHub<MessagingHub>("/messaging");
             });
         }
     }

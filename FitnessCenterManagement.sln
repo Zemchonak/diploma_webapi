@@ -9,6 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitnessCenterManagement.Bus
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitnessCenterManagement.Api", "src\FitnessCenterManagement.Api\FitnessCenterManagement.Api.csproj", "{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{386099E2-6D4F-4D92-925C-FF776F07D196}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{65EAD59E-2151-421E-A0FD-8C4E5E9F6CA5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitnessCenterManagement.UnitTests", "tests\FitnessCenterManagement.UnitTests\FitnessCenterManagement.UnitTests.csproj", "{7A64DE08-B858-4838-9D30-41992C7FBEDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessCenterManagement.IntegrationTests", "tests\FitnessCenterManagement.IntegrationTests\FitnessCenterManagement.IntegrationTests.csproj", "{CA71229F-5D2C-4CEA-A80B-7AD96222612F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,9 +35,24 @@ Global
 		{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A64DE08-B858-4838-9D30-41992C7FBEDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A64DE08-B858-4838-9D30-41992C7FBEDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A64DE08-B858-4838-9D30-41992C7FBEDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A64DE08-B858-4838-9D30-41992C7FBEDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA71229F-5D2C-4CEA-A80B-7AD96222612F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA71229F-5D2C-4CEA-A80B-7AD96222612F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA71229F-5D2C-4CEA-A80B-7AD96222612F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA71229F-5D2C-4CEA-A80B-7AD96222612F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0C8B2777-7C71-45B1-8B7C-5B3EC785C48A} = {386099E2-6D4F-4D92-925C-FF776F07D196}
+		{AA4C34B7-4EF1-4334-AA8A-DD9BC28E5DA8} = {386099E2-6D4F-4D92-925C-FF776F07D196}
+		{0AD3EDDF-DDA2-4E1C-9FD3-6D05364A5409} = {386099E2-6D4F-4D92-925C-FF776F07D196}
+		{7A64DE08-B858-4838-9D30-41992C7FBEDD} = {65EAD59E-2151-421E-A0FD-8C4E5E9F6CA5}
+		{CA71229F-5D2C-4CEA-A80B-7AD96222612F} = {65EAD59E-2151-421E-A0FD-8C4E5E9F6CA5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		RESX_ExcelExportMode = MultipleSheets

@@ -156,7 +156,7 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             await _reviewEntityService.DeleteAsync(id);
         }
 
-        private void ValidateCustomerCategory(CustomerCategoryDto item)
+        internal void ValidateCustomerCategory(CustomerCategoryDto item)
         {
             if (item is null)
             {

@@ -14,7 +14,6 @@ namespace FitnessCenterManagement.Api.Mapper
             CreateMap<VenueModel, VenueDto>().ReverseMap();
             CreateMap<FitnessEventModel, FitnessEventDto>().ReverseMap();
             CreateMap<AbonementModel, AbonementDto>().ReverseMap();
-            CreateMap<AbonementFitnessEventModel, AbonementFitnessEventDto>().ReverseMap();
             CreateMap<AbonementCardModel, AbonementCardDto>().ReverseMap();
             CreateMap<AbonementFitnessEventModel, AbonementFitnessEventDto>().ReverseMap();
             CreateMap<CardEventItemModel, CardEventItemDto>().ReverseMap();

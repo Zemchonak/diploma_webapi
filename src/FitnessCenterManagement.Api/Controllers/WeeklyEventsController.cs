@@ -34,11 +34,6 @@ namespace FitnessCenterManagement.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Index(int part = 0)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized();
-            }
-
             var items = await _schedulesService.GetAllWeeklyEventsAsync();
 
             return part == 0 ?
@@ -59,7 +54,7 @@ namespace FitnessCenterManagement.Api.Controllers
         {
             try
             {
-                var model = _mapper.Map<SpecializationModel>(await _schedulesService.GetWeeklyEventByIdAsync(id));
+                var model = _mapper.Map<WeeklyEventModel>(await _schedulesService.GetWeeklyEventByIdAsync(id));
                 return Ok(model);
             }
             catch (BusinessLogicException)

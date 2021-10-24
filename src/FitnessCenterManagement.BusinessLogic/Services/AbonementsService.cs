@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FitnessCenterManagement.BusinessLogic.Dtos;
@@ -32,18 +33,10 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             _mapper = mapper;
         }
 
-        private static void ValidateCardEventItem(CardEventItemDto item)
-        {
-            if (item is null)
-            {
-                throw new BusinessLogicException(StringRes.NullEntityMsg, new ArgumentNullException(nameof(item)));
-            }
-        }
-
         // ABONEMENT
         public async Task<int> CreateAbonementAsync(AbonementDto item)
         {
-            await ValidateAbonement(item);
+            ValidateAbonement(item);
 
             return await _abonementEntityService.CreateAsync(_mapper.Map<Abonement>(item));
         }
@@ -60,7 +53,7 @@ namespace FitnessCenterManagement.BusinessLogic.Services
 
         public async Task UpdateAbonementAsync(AbonementDto item)
         {
-            await ValidateAbonement(item);
+            ValidateAbonement(item);
 
             await _abonementEntityService.UpdateAsync(_mapper.Map<Abonement>(item));
         }
@@ -101,6 +94,14 @@ namespace FitnessCenterManagement.BusinessLogic.Services
         }
 
         // CARDEVENTITEM
+        public void ValidateCardEventItem(CardEventItemDto item)
+        {
+            if (item is null)
+            {
+                throw new BusinessLogicException(StringRes.NullEntityMsg, new ArgumentNullException(nameof(item)));
+            }
+        }
+
         public async Task<int> CreateCardEventItemAsync(CardEventItemDto item)
         {
             ValidateCardEventItem(item);
@@ -130,14 +131,15 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             await _cardEventItemEntityService.DeleteAsync(id);
         }
 
-        private async Task ValidateAbonement(AbonementDto item)
+        public void ValidateAbonement(AbonementDto item)
         {
             if (item is null)
             {
                 throw new BusinessLogicException(StringRes.NullEntityMsg, new ArgumentNullException(nameof(item)));
             }
 
-            if (await _abonementEntityService.GetAll().AnyAsync(a => a.Id != item.Id && a.Name == item.Name))
+            var allAb = _abonementEntityService.GetAll();
+            if (allAb.Any(a => a.Id != item.Id && a.Name == item.Name))
             {
                 throw new ValidationException(Resources.StringRes.NameShouldBeUniqueMsg, nameof(item.Name));
             }
@@ -158,11 +160,11 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             }
         }
 
-        private Task ValidateAbonementCard(AbonementCardDto item)
+        public Task ValidateAbonementCard(AbonementCardDto item)
         {
             if (item is null)
             {
-                throw new ArgumentNullException(nameof(item));
+                throw new BusinessLogicException(StringRes.NullEntityMsg, new ArgumentNullException(nameof(item)));
             }
 
             if (item.Visits < Constants.VisitsMinimum)

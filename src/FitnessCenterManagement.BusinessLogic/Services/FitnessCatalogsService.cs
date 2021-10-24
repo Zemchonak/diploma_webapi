@@ -265,7 +265,7 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             }
         }
 
-        private void ValidateService(ServiceDto item)
+        internal void ValidateService(ServiceDto item)
         {
             if (item is null)
             {

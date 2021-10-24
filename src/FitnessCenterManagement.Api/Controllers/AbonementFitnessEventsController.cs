@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using FitnessCenterManagement.Api.Identity;
@@ -26,24 +26,21 @@ namespace FitnessCenterManagement.Api.Controllers
         }
 
         /// <summary>
-        /// Gets all the abonement fitness events.
+        /// Gets all the abonement fitness events (or with specified abonement ID).
         /// </summary>
         /// <response code="200">Get is successful, the response contains data about the abonement fitness events.</response>
         [HttpGet("")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Index(int part = 0)
+        public async Task<IActionResult> IndexByAbonementId(int abonementId = 0)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Unauthorized();
-            }
+            var items = abonementId > 0 ?
+                await _schedulesService.GetAbonementFitnessEventsByAbonementIdAsync(abonementId) :
+                await _schedulesService.GetAllAbonementFitnessEventsAsync();
 
-            var items = await _schedulesService.GetAllAbonementFitnessEventsAsync();
-
-            return part == 0 ?
-                Ok(items) :
-                Ok(items.Where(s => s.FitnessEventId == part).ToList());
+            return abonementId < 0 ?
+                NotFound() :
+                Ok(_mapper.Map<IReadOnlyCollection<AbonementFitnessEventModel>>(items));
         }
 
         /// <summary>
@@ -59,7 +56,7 @@ namespace FitnessCenterManagement.Api.Controllers
         {
             try
             {
-                var model = _mapper.Map<SpecializationModel>(await _schedulesService.GetAbonementFitnessEventByIdAsync(id));
+                var model = _mapper.Map<AbonementFitnessEventModel>(await _schedulesService.GetAbonementFitnessEventByIdAsync(id));
                 return Ok(model);
             }
             catch (BusinessLogicException)
@@ -123,6 +120,8 @@ namespace FitnessCenterManagement.Api.Controllers
                 {
                     throw new BusinessLogicException("", fieldName: "", null);
                 }
+
+                model.Id = 0;
 
                 result = await _schedulesService.CreateAbonementFitnessEventAsync(_mapper.Map<AbonementFitnessEventDto>(model));
             }

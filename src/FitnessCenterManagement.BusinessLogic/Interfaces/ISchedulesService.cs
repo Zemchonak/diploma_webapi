@@ -24,6 +24,14 @@ namespace FitnessCenterManagement.BusinessLogic.Interfaces
         Task<IReadOnlyCollection<AbonementFitnessEventDto>> GetAllAbonementFitnessEventsAsync();
 
         /// <summary>
+        /// Returns an <see cref="IReadOnlyCollection{AbonementFitnessEventDto}"/> with the specified abonement ID.
+        /// </summary>
+        /// <param name="abonementId">The ID of the abonement of the <see cref="AbonementFitnessEventDto"/>s to get.</param>
+        /// <returns>An <see cref="IReadOnlyCollection{AbonementFitnessEventDto}"/> of <see cref="AbonementFitnessEventDto"/>.</returns>
+        /// <exception cref="BusinessLogic.Exceptions.BusinessLogicException">Business logic exception in case of the specified item wasn't found.</exception>
+        Task<IReadOnlyCollection<AbonementFitnessEventDto>> GetAbonementFitnessEventsByAbonementIdAsync(int abonementId);
+
+        /// <summary>
         /// Returns an <see cref="AbonementFitnessEventDto"/> with the specified ID.
         /// </summary>
         /// <param name="id">The ID of the <see cref="AbonementFitnessEventDto"/> to get.</param>

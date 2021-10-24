@@ -10,6 +10,7 @@ namespace FitnessCenterManagement.BusinessLogic.Mapper
         public BusinessLogicMapperFirstProfile()
         {
             CreateMap<AbonementCard, AbonementCardDto>().ReverseMap();
+            CreateMap<AbonementFitnessEvent, AbonementFitnessEventDto>().ReverseMap();
             CreateMap<Abonement, AbonementDto>().ReverseMap();
             CreateMap<CustomerCategory, CustomerCategoryDto>().ReverseMap();
             CreateMap<Customer, CustomerDto>().ReverseMap();

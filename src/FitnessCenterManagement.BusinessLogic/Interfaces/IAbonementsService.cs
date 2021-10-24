@@ -7,6 +7,32 @@ namespace FitnessCenterManagement.BusinessLogic.Interfaces
 {
     public interface IAbonementsService
     {
+        // VALIDATIONS
+
+        /// <summary>
+        /// Checks if the specified <see cref="AbonementDto"/> is valid.
+        /// </summary>
+        /// <param name="item">An <see cref="AbonementDto"/> entity to check if is valid.</param>
+        /// <exception cref="ValidationException">Validation failure exception.</exception>
+        /// <exception cref="BusinessLogic.Exceptions.BusinessLogicException">Business logic exception.</exception>
+        void ValidateAbonement(AbonementDto item);
+
+        /// <summary>
+        /// Checks if the specified <see cref="AbonementCardDto"/> is valid.
+        /// </summary>
+        /// <param name="item">An <see cref="AbonementCardDto"/> entity to check if is valid.</param>
+        /// <exception cref="ValidationException">Validation failure exception.</exception>
+        /// <exception cref="BusinessLogic.Exceptions.BusinessLogicException">Business logic exception.</exception>
+        Task ValidateAbonementCard(AbonementCardDto item);
+
+        /// <summary>
+        /// Checks if the specified <see cref="CardEventItemDto"/> is valid.
+        /// </summary>
+        /// <param name="item">An <see cref="CardEventItemDto"/> entity to check if is valid.</param>
+        /// <exception cref="ValidationException">Validation failure exception.</exception>
+        /// <exception cref="BusinessLogic.Exceptions.BusinessLogicException">Business logic exception.</exception>
+        void ValidateCardEventItem(CardEventItemDto item);
+
         // ABONEMENT
 
         /// <summary>

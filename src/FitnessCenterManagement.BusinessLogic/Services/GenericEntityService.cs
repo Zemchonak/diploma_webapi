@@ -17,11 +17,11 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             _repository = repository;
         }
 
-        public async Task<int> CreateAsync(T item)
+        public Task<int> CreateAsync(T item)
         {
             try
             {
-                return await _repository.CreateAsync(item);
+                return _repository.CreateAsync(item);
             }
             catch (ArgumentNullException)
             {

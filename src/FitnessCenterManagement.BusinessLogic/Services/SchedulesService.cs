@@ -43,73 +43,34 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             return first < second && first.AddMinutes(firstLength) > second;
         }
 
-        private static void ValidateFitnessEvent(FitnessEventDto item)
+        internal async Task ValidateAbonementFitnessEvent(AbonementFitnessEventDto item)
         {
             if (item is null)
             {
                 throw new ValidationException(StringRes.NullEntityMsg, new ArgumentNullException(nameof(item)));
             }
 
-            if (item.Minutes < Constants.MeetingsMinutesLengthMinimum)
-            {
-                throw new ValidationException(StringRes.NegativeMinutesMsg, nameof(item.Minutes));
-            }
-
-            if (item.Minutes > Constants.MeetingsMinutesLengthMaximum)
-            {
-                throw new ValidationException(StringRes.MaximumMinutesMsg, nameof(item.Minutes));
-            }
-        }
-
-        private void ValidateAbonementFitnessEvent(AbonementFitnessEventDto item)
-        {
-            if (item is null)
-            {
-                throw new ValidationException(StringRes.NullEntityMsg, new ArgumentNullException(nameof(item)));
-            }
-
-            if (_abonementFitnessEventEntityService.GetAll().Any(i => i.AbonementId == item.AbonementId && i.FitnessEventId == item.FitnessEventId))
+            if (await _abonementFitnessEventEntityService.GetAll().AnyAsync(i => i.Id != item.Id
+                        && i.AbonementId == item.AbonementId
+                        && i.FitnessEventId == item.FitnessEventId))
             {
                 throw new ValidationException(StringRes.AlreadyExistsMsg);
             }
         }
 
-        // FITNESSEVENT
-        public async Task<int> CreateFitnessEventAsync(FitnessEventDto item)
-        {
-            ValidateFitnessEvent(item);
-
-            return await _fitnessEventEntityService.CreateAsync(_mapper.Map<FitnessEvent>(item));
-        }
-
-        public async Task<FitnessEventDto> GetFitnessEventByIdAsync(int id)
-        {
-            return _mapper.Map<FitnessEventDto>(await _fitnessEventEntityService.GetByIdAsync(id));
-        }
-
-        public async Task<IReadOnlyCollection<FitnessEventDto>> GetAllFitnessEventsAsync()
-        {
-            return _mapper.Map<IReadOnlyCollection<FitnessEventDto>>((await _fitnessEventEntityService.GetAll().ToListAsync()).AsReadOnly());
-        }
-
-        public async Task UpdateFitnessEventAsync(FitnessEventDto item)
-        {
-            ValidateFitnessEvent(item);
-
-            await _fitnessEventEntityService.UpdateAsync(_mapper.Map<FitnessEvent>(item));
-        }
-
-        public async Task DeleteFitnessEventAsync(int id)
-        {
-            await _fitnessEventEntityService.DeleteAsync(id);
-        }
-
         // ABONEMENTFITNESSEVENT
         public async Task<int> CreateAbonementFitnessEventAsync(AbonementFitnessEventDto item)
         {
-            ValidateAbonementFitnessEvent(item);
+            await ValidateAbonementFitnessEvent(item);
 
             return await _abonementFitnessEventEntityService.CreateAsync(_mapper.Map<AbonementFitnessEvent>(item));
+        }
+
+        public async Task<IReadOnlyCollection<AbonementFitnessEventDto>> GetAbonementFitnessEventsByAbonementIdAsync(int abonementId)
+        {
+            return _mapper.Map<IReadOnlyCollection<AbonementFitnessEventDto>>(
+                (await _abonementFitnessEventEntityService.GetAll().Where(a => a.AbonementId == abonementId).ToListAsync())
+                .AsReadOnly());
         }
 
         public async Task<AbonementFitnessEventDto> GetAbonementFitnessEventByIdAsync(int id)
@@ -124,7 +85,7 @@ namespace FitnessCenterManagement.BusinessLogic.Services
 
         public async Task UpdateAbonementFitnessEventAsync(AbonementFitnessEventDto item)
         {
-            ValidateAbonementFitnessEvent(item);
+            await ValidateAbonementFitnessEvent(item);
 
             await _abonementFitnessEventEntityService.UpdateAsync(_mapper.Map<AbonementFitnessEvent>(item));
         }
@@ -194,7 +155,7 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             await _weeklyEventEntityService.DeleteAsync(id);
         }
 
-        private async Task ValidateDateEvent(DateEventDto item)
+        internal async Task ValidateDateEvent(DateEventDto item)
         {
             if (item is null)
             {
@@ -262,6 +223,11 @@ namespace FitnessCenterManagement.BusinessLogic.Services
             // select every weekly event with the same day
             var weeklyEventsSameDay = await _weeklyEventEntityService.GetAll()
                 .Where(w => w.DayOfWeek == item.DayOfWeek).ToListAsync();
+
+            if (weeklyEventsSameDay.Count == 0)
+            {
+                return;
+            }
 
             // get all the fitness events which ids are in weeklyEventsSameDay
             var fitnessEvents = await _fitnessEventEntityService.GetAll()
